@@ -1,0 +1,43 @@
+{{- if .Values.migrations.enabled }}
+# "alembic upgrade head" once per install/upgrade, instead of in every API pod (which would race).
+# Argo CD runs the same Job as a PostSync hook.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "it.fullname" . }}-migrate
+  labels: {{- include "it.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels: {{- include "it.selector" (list . "migrate") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+      containers:
+        - name: migrate
+          image: {{ include "it.image" (list .Values.api.image .) }}
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          # PostgreSQL may still be starting on the first install: retry for a while
+          command:
+            - sh
+            - -c
+            - |
+              for i in $(seq 1 40); do
+                alembic upgrade head && exit 0
+                echo "database not ready (attempt $i), retrying in 3s"; sleep 3
+              done
+              exit 1
+          env: {{- include "it.dbEnv" . | nindent 12 }}
+          securityContext: {{- include "it.securityContext" true | nindent 12 }}
+{{- end }}

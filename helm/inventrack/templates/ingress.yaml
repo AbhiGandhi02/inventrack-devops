@@ -1,0 +1,28 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "it.fullname" . }}
+  labels: {{- include "it.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: /api          # REST API -> FastAPI
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "it.api" . }}
+                port: { name: http }
+          - path: /             # everything else -> React app
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "it.web" . }}
+                port: { name: http }
+{{- end }}
