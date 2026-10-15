@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: inventrack
+  labels:
+    app.kubernetes.io/part-of: inventrack
+    # Enforce the "restricted" Pod Security Standard: non-root, no privilege escalation, dropped caps
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/warn: restricted
