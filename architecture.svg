@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" width="1200" height="720" font-family="Inter, -apple-system, Segoe UI, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .box{fill:#fff;stroke:#cbd5e1;stroke-width:1.5}
+      .grp{fill:#f8fafc;stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:6 4}
+      .t{font-size:15px;font-weight:700;fill:#0f172a}
+      .s{font-size:12px;fill:#475569}
+      .g{font-size:13px;font-weight:700;fill:#0f766e;letter-spacing:.04em}
+      .ln{stroke:#475569;stroke-width:1.6;fill:none;marker-end:url(#a)}
+      .dl{stroke:#475569;stroke-width:1.4;fill:none;stroke-dasharray:5 4;marker-end:url(#a)}
+      .lb{font-size:11.5px;fill:#334155}
+    </style>
+  </defs>
+  <rect width="1200" height="720" fill="#f1f5f4"/>
+  <text x="32" y="44" font-size="24" font-weight="800" fill="#0f172a">InvenTrack - delivery pipeline and runtime</text>
+  <text x="32" y="68" class="s">Abhi Gandhi · 10397</text>
+
+  <!-- Developer + GitHub -->
+  <rect class="box" x="32" y="100" width="150" height="70" rx="10"/>
+  <text class="t" x="50" y="130">Developer</text><text class="s" x="50" y="150">git push main</text>
+
+  <rect class="grp" x="220" y="90" width="940" height="200" rx="14"/>
+  <text class="g" x="240" y="114">GITHUB ACTIONS  ·  .github/workflows/ci-cd.yml</text>
+  <rect class="box" x="240" y="128" width="170" height="140" rx="10"/>
+  <text class="t" x="256" y="154">Build &amp; test</text>
+  <text class="s" x="256" y="176">pytest (23, cov ≥ 90%)</text><text class="s" x="256" y="194">vite build</text>
+  <text class="s" x="256" y="212">helm lint</text><text class="s" x="256" y="230">terraform validate</text>
+  <rect class="box" x="430" y="128" width="170" height="140" rx="10"/>
+  <text class="t" x="446" y="154">Security</text>
+  <text class="s" x="446" y="176">Bandit + CodeQL</text><text class="s" x="446" y="194">pip-audit, npm audit</text>
+  <text class="s" x="446" y="212">Gitleaks</text><text class="s" x="446" y="230">Trivy HIGH/CRIT gate</text>
+  <rect class="box" x="620" y="128" width="160" height="140" rx="10"/>
+  <text class="t" x="636" y="154">Publish</text>
+  <text class="s" x="636" y="176">images tagged with</text><text class="s" x="636" y="194">commit SHA (no latest)</text>
+  <text class="s" x="636" y="212">→ GHCR</text>
+  <rect class="box" x="800" y="128" width="160" height="140" rx="10"/>
+  <text class="t" x="816" y="154">Deploy test</text>
+  <text class="s" x="816" y="176">kind in the runner</text><text class="s" x="816" y="194">helm install</text>
+  <text class="s" x="816" y="212">smoke test via curl</text>
+  <rect class="box" x="980" y="128" width="160" height="140" rx="10"/>
+  <text class="t" x="996" y="154">GitOps bump</text>
+  <text class="s" x="996" y="176">writes SHA into</text><text class="s" x="996" y="194">values-gitops.yaml</text>
+  <text class="s" x="996" y="212">and commits it</text>
+  <path class="ln" d="M182 135 H236"/>
+  <path class="ln" d="M410 198 H426"/><path class="ln" d="M600 198 H616"/><path class="ln" d="M780 198 H796"/><path class="ln" d="M960 198 H976"/>
+
+  <!-- registry and git -->
+  <rect class="box" x="560" y="320" width="230" height="64" rx="10"/>
+  <text class="t" x="578" y="348">GHCR</text><text class="s" x="578" y="368">inventrack-backend / -frontend :sha</text>
+  <rect class="box" x="900" y="320" width="240" height="64" rx="10"/>
+  <text class="t" x="918" y="348">Git repo (source of truth)</text><text class="s" x="918" y="368">helm/inventrack + values-gitops</text>
+  <path class="ln" d="M700 268 V316"/><path class="ln" d="M1060 268 V316"/>
+
+  <!-- cluster -->
+  <rect class="grp" x="32" y="420" width="1128" height="270" rx="14"/>
+  <text class="g" x="52" y="446">KUBERNETES  ·  kind locally  /  EKS via Terraform</text>
+  <rect class="box" x="900" y="462" width="240" height="64" rx="10"/>
+  <text class="t" x="918" y="490">Argo CD</text><text class="s" x="918" y="510">auto-sync · prune · self-heal</text>
+  <path class="ln" d="M1020 384 V458"/>
+  <text class="lb" x="1030" y="412">watches</text>
+  <path class="dl" d="M640 384 C 640 430, 560 450, 535 466"/>
+  <text class="lb" x="684" y="408">pull :sha</text>
+
+  <rect class="box" x="52" y="470" width="150" height="64" rx="10"/>
+  <text class="t" x="68" y="498">User</text><text class="s" x="68" y="518">browser / curl</text>
+  <rect class="box" x="232" y="470" width="170" height="64" rx="10"/>
+  <text class="t" x="248" y="498">Ingress (nginx)</text><text class="s" x="248" y="518">inventrack.local</text>
+  <rect class="box" x="440" y="470" width="190" height="64" rx="10"/>
+  <text class="t" x="456" y="498">web × 2</text><text class="s" x="456" y="518">React on nginx :8080</text>
+  <rect class="box" x="440" y="600" width="190" height="64" rx="10"/>
+  <text class="t" x="456" y="628">api × 2-5 (HPA)</text><text class="s" x="456" y="648">FastAPI :8000 /metrics</text>
+  <rect class="box" x="680" y="600" width="190" height="64" rx="10"/>
+  <text class="t" x="696" y="628">PostgreSQL 16</text><text class="s" x="696" y="648">StatefulSet + 1Gi PVC</text>
+  <rect class="box" x="680" y="470" width="190" height="64" rx="10"/>
+  <text class="t" x="696" y="498">migrate Job</text><text class="s" x="696" y="518">alembic (hook/PostSync)</text>
+  <rect class="box" x="232" y="600" width="170" height="64" rx="10"/>
+  <text class="t" x="248" y="628">Prometheus</text><text class="s" x="248" y="648">+ Grafana, alerts</text>
+
+  <path class="ln" d="M202 502 H228"/>
+  <path class="ln" d="M402 494 H436"/><text class="lb" x="412" y="486">/</text>
+  <path class="ln" d="M380 534 C 380 590, 420 620, 436 626"/><text class="lb" x="390" y="574">/api</text>
+  <path class="ln" d="M630 632 H676"/>
+  <path class="ln" d="M775 534 V596"/>
+  <path class="dl" d="M436 640 H406"/><text class="lb" x="405" y="660">scrape</text>
+  <path class="dl" d="M900 510 H874"/>
+  <text class="lb" x="872" y="548">sync</text>
+</svg>
