@@ -1,0 +1,29 @@
+# secrets / local env
+.env
+*.env.local
+terraform.tfvars
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.coverage
+*.db
+
+# node
+node_modules/
+dist/
+.vite/
+
+# terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.kubeconfig
+
+# misc
+.DS_Store
+.playwright-mcp/
