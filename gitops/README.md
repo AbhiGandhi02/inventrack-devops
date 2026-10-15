@@ -35,10 +35,12 @@ The GHCR packages inherit the repository's **public** visibility, so the cluster
 
 **Rollback** is a `git revert` of the bump commit. Argo CD then deploys the previous SHA.
 
-## Live run (v1.1)
+## Live run
 
-I pushed commit `57fb395` ("Release v1.1"). CI built and pushed new images, and the `gitops-bump` job committed the new SHA. Argo CD synced it and rolled the pods without any manual step:
+Commit `4082399` was pushed to `main`. CI run [#38803735072](https://github.com/AbhiGandhi02/inventrack-devops/actions/runs/38803735072) tested, scanned, built and pushed `ghcr.io/abhigandhi02/inventrack-devops/inventrack-{backend,frontend}:4082399…`. Its `gitops-bump` job committed `6e787f8 gitops: deploy inventrack 4082399`. Argo CD picked up that commit and rolled both Deployments onto the new images, with no manual `kubectl` or `helm` step:
 
 ![Argo CD application synced and healthy](../screenshots/argocd-app.png)
+
+The release that changed the footer to v1.1 went through the same flow. The app as served through the Ingress afterwards:
 
 ![v1.1 live](../screenshots/gitops-v1.1-live.png)

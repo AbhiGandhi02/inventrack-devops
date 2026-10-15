@@ -256,7 +256,7 @@ I broke the running cluster four ways and fixed each one: an image tag that does
    ```
 7. Reload the app and the change is live. Grafana shows the demo traffic.
 
-I ran this exact flow for v1.1. See [gitops/README.md](gitops/README.md#live-run-v11).
+I ran this flow end to end. See [gitops/README.md](gitops/README.md#live-run).
 
 ---
 
