@@ -1,0 +1,68 @@
+# Defaults for every environment. Override per environment with:
+#   values-local.yaml   kind/minikube, images loaded locally
+#   values-gitops.yaml  Argo CD, image tags written by CI
+
+nameOverride: ""
+imagePullSecrets: []
+
+app:
+  logLevel: INFO
+
+api:
+  image:
+    repository: ghcr.io/abhigandhi-cell/inventrack-devops/inventrack-backend
+    tag: ""            # CI sets the commit SHA; never "latest"
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 8000
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits: { cpu: 500m, memory: 256Mi }
+  hpa:
+    enabled: true
+    min: 2
+    max: 5
+    cpuPercent: 60
+  pdb:
+    minAvailable: 1
+
+web:
+  image:
+    repository: ghcr.io/abhigandhi-cell/inventrack-devops/inventrack-frontend
+    tag: ""
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 8080
+  resources:
+    requests: { cpu: 25m, memory: 32Mi }
+    limits: { cpu: 200m, memory: 96Mi }
+
+database:
+  image: postgres:16-alpine
+  name: inventrack
+  user: inventrack
+  # Empty = generate a random password on install and keep it on upgrades.
+  password: ""
+  # Name an existing Secret instead (required for GitOps, where lookup is unavailable).
+  existingSecret: ""
+  secretKey: password
+  storage: 1Gi
+  storageClass: ""
+  resources:
+    requests: { cpu: 100m, memory: 128Mi }
+    limits: { cpu: "1", memory: 512Mi }
+
+migrations:
+  enabled: true
+
+ingress:
+  enabled: true
+  className: nginx
+  host: inventrack.local
+  annotations: {}
+
+metrics:
+  serviceMonitor:
+    enabled: false
+    interval: 15s
+    labels: {}

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "it.web" . }}
+  labels:
+    {{- include "it.labels" . | nindent 4 }}
+    {{- include "it.selector" (list . "web") | nindent 4 }}
+spec:
+  replicas: {{ .Values.web.replicas }}
+  revisionHistoryLimit: 5
+  strategy:
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  selector:
+    matchLabels: {{- include "it.selector" (list . "web") | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "it.selector" (list . "web") | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsUser: 101
+        runAsGroup: 101
+      containers:
+        - name: web
+          image: {{ include "it.image" (list .Values.web.image .) }}
+          imagePullPolicy: {{ .Values.web.image.pullPolicy }}
+          env:
+            - name: BACKEND_URL
+              value: http://{{ include "it.api" . }}:{{ .Values.api.port }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.web.port }}
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            periodSeconds: 5
+          resources: {{- toYaml .Values.web.resources | nindent 12 }}
+          securityContext: {{- include "it.securityContext" false | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "it.web" . }}
+  labels:
+    {{- include "it.labels" . | nindent 4 }}
+    {{- include "it.selector" (list . "web") | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector: {{- include "it.selector" (list . "web") | nindent 4 }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

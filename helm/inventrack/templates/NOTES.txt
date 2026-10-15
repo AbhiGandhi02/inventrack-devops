@@ -1,0 +1,10 @@
+InvenTrack {{ .Chart.AppVersion }} is installed as release "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+  kubectl get pods,svc,ingress,hpa -n {{ .Release.Namespace }}
+{{- if .Values.ingress.enabled }}
+
+Through the Ingress:  http://{{ .Values.ingress.host }}  (point the host at your ingress controller)
+{{- end }}
+
+Without the Ingress:
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "it.web" . }} 8081:80   ->  http://localhost:8081
