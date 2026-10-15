@@ -1,0 +1,33 @@
+# Argo CD keeps the inventrack namespace in sync with the Helm chart on the main branch.
+# Apply once:  kubectl apply -f gitops/argocd-application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: inventrack
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # deleting the Application also removes what it deployed
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/abhigandhi-cell/inventrack-devops.git
+    targetRevision: main
+    path: helm/inventrack
+    helm:
+      releaseName: inventrack
+      valueFiles:
+        - values.yaml
+        - values-gitops.yaml # image tags are written here by CI
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: inventrack
+  syncPolicy:
+    automated:
+      prune: true    # delete what was removed from Git
+      selfHeal: true # revert manual changes made in the cluster
+    syncOptions:
+      - CreateNamespace=false # namespace (with Pod Security labels) comes from k8s/namespace.yaml
+    retry:
+      limit: 5
+      backoff: { duration: 10s, factor: 2, maxDuration: 3m }
+  revisionHistoryLimit: 10
