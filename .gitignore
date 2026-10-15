@@ -27,3 +27,6 @@ dist/
 # misc
 .DS_Store
 .playwright-mcp/
+
+# local backups made during troubleshooting
+*.backup.json
