@@ -1,0 +1,12 @@
+# Grafana part of kube-prometheus-stack (passed as a second -f file)
+grafana:
+  defaultDashboardsTimezone: browser
+  # admin password is generated into a Secret by the chart; see monitoring/README.md to read it
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard     # ConfigMaps with this label become dashboards
+      labelValue: "1"
+      searchNamespace: ALL
+  resources:
+    requests: { cpu: 50m, memory: 160Mi }

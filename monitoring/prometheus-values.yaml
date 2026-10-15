@@ -1,0 +1,25 @@
+# kube-prometheus-stack values: Prometheus, Alertmanager, node-exporter, kube-state-metrics.
+# Sized for a laptop cluster (kind). Install command: monitoring/README.md
+prometheus:
+  prometheusSpec:
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+    retention: 3d
+    # Discover ServiceMonitors / PrometheusRules in every namespace regardless of labels
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+      limits: { memory: 1536Mi }
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests: { cpu: 10m, memory: 48Mi }
+
+# Control-plane components are not reachable for scraping on kind; disabling avoids false DOWN targets
+kubeEtcd: { enabled: false }
+kubeControllerManager: { enabled: false }
+kubeScheduler: { enabled: false }
+kubeProxy: { enabled: false }
