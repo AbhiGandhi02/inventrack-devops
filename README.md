@@ -3,7 +3,7 @@
 **Name:** Abhi Gandhi
 **Roll Number:** 10397
 **Session 21:** Final DevOps Project and Troubleshooting
-**Repository:** https://github.com/abhigandhi-cell/inventrack-devops (public)
+**Repository:** https://github.com/AbhiGandhi02/inventrack-devops (public)
 
 InvenTrack is a stock-control app for a small office-supplies shop. Staff add items, receive and ship stock (every change goes into a movement history), search by name, SKU or supplier, and see at a glance what needs reordering. Around the app is the full course toolchain: Git, CI/CD, DevSecOps, Docker, Kubernetes, Helm, Terraform, monitoring and GitOps. Every screenshot in this repository comes from commands and pipelines that actually ran.
 
@@ -129,7 +129,7 @@ There are **23 tests** in three files, covering every endpoint and the error pat
 
 ## 6. Git and GitHub (M3)
 
-- Public repo: https://github.com/abhigandhi-cell/inventrack-devops
+- Public repo: https://github.com/AbhiGandhi02/inventrack-devops
 - Commits are small and each has one purpose: backend, frontend, Docker, Helm, Terraform, CI, docs, plus commits written by the GitOps bot.
 - `.gitignore` covers `.env`, `__pycache__/`, `.venv/`, `node_modules/`, `dist/`, Terraform state and `.terraform/`, `terraform.tfvars`, kubeconfigs and local secret backups.
 
@@ -162,7 +162,7 @@ More in [docker/README.md](docker/README.md).
 | Security | `sast` (Bandit + CodeQL), `sca` (pip-audit + npm audit), `secrets` (Gitleaks) |
 | Images | `build-images` (matrix, tagged `${{ github.sha }}`, saved as an artifact) → `scan-images` (Trivy on the same tarball) |
 | Gate | `security-gate` needs every check above |
-| Delivery | `publish` → `ghcr.io/abhigandhi-cell/inventrack-devops/inventrack-{backend,frontend}:<sha>` |
+| Delivery | `publish` → `ghcr.io/abhigandhi02/inventrack-devops/inventrack-{backend,frontend}:<sha>` |
 | Deploy test | `deploy-test`: kind cluster in the runner, `helm upgrade --install`, smoke test (healthz, summary, create + read an item) |
 | GitOps | `gitops-bump`: commits the SHA to `helm/inventrack/values-gitops.yaml` |
 

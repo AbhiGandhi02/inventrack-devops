@@ -10,7 +10,7 @@ app:
 
 api:
   image:
-    repository: ghcr.io/abhigandhi-cell/inventrack-devops/inventrack-backend
+    repository: ghcr.io/abhigandhi02/inventrack-devops/inventrack-backend
     tag: ""            # CI sets the commit SHA; never "latest"
     pullPolicy: IfNotPresent
   replicas: 2
@@ -28,7 +28,7 @@ api:
 
 web:
   image:
-    repository: ghcr.io/abhigandhi-cell/inventrack-devops/inventrack-frontend
+    repository: ghcr.io/abhigandhi02/inventrack-devops/inventrack-frontend
     tag: ""
     pullPolicy: IfNotPresent
   replicas: 2
