@@ -1,0 +1,49 @@
+# Full InvenTrack stack: PostgreSQL + FastAPI + React/nginx
+#   docker compose up --build            (from the repository root)
+#   docker compose -f docker/docker-compose.yml up --build
+name: inventrack
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: inventrack
+      POSTGRES_USER: inventrack
+      # Development default only; put a real value in an untracked .env file
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-inventrack}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inventrack -d inventrack"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  backend:
+    build: ../application/backend
+    image: inventrack-backend:local
+    environment:
+      DATABASE_URL: postgresql+psycopg://inventrack:${POSTGRES_PASSWORD:-inventrack}@db:5432/inventrack
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build: ../application/frontend
+    image: inventrack-frontend:local
+    environment:
+      BACKEND_URL: http://backend:8000
+    ports:
+      - "${FRONTEND_PORT:-3000}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db-data:

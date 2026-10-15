@@ -1,0 +1,6 @@
+# Root entry point so `docker compose up --build` works from the repository root.
+# The services live in docker/docker-compose.yml.
+name: inventrack
+
+include:
+  - docker/docker-compose.yml
