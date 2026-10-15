@@ -1,0 +1,17 @@
+# Used by Argo CD (gitops/argocd-application.yaml) on top of values.yaml.
+# The CI job "gitops-bump" rewrites both tags with the commit SHA it just built and pushed.
+api:
+  image:
+    tag: "pending-first-ci-run"
+web:
+  image:
+    tag: "pending-first-ci-run"
+
+database:
+  # Argo CD renders without cluster access, so the chart cannot generate and keep a password.
+  # Create this Secret once before the first sync (see gitops/README.md).
+  existingSecret: inventrack-db
+
+metrics:
+  serviceMonitor:
+    enabled: true

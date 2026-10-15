@@ -1,0 +1,11 @@
+# Local cluster (kind / minikube): images are built on this machine and loaded into the nodes.
+api:
+  image:
+    repository: inventrack-backend
+    tag: local
+    pullPolicy: Never
+web:
+  image:
+    repository: inventrack-frontend
+    tag: local
+    pullPolicy: Never
