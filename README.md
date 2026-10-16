@@ -37,7 +37,7 @@ git push ─► GitHub Actions: test · SAST/SCA/secrets · build · Trivy gate 
 | CI/CD | GitHub Actions, GitHub Container Registry |
 | Security | Bandit, CodeQL, pip-audit, npm audit, Gitleaks, Trivy |
 | Orchestration | Kubernetes (kind), Helm 4, ingress-nginx, HPA, metrics-server, Pod Security `restricted` |
-| Infrastructure | Terraform: AWS VPC + EKS, LocalStack + kind for a no-cost apply |
+| Infrastructure | Terraform: AWS VPC + EKS (applied on AWS), LocalStack + kind for free practice |
 | Monitoring | kube-prometheus-stack (Prometheus, Alertmanager, Grafana) |
 | GitOps | Argo CD |
 
@@ -186,13 +186,7 @@ Trivy scans **both** images in CI with `severity: HIGH,CRITICAL`, `ignore-unfixe
 
 `terraform/` defines the AWS target: a VPC (`10.40.0.0/16`, **2 public + 2 private subnets** in 2 AZs, IGW, NAT) through a reusable `modules/network`, and an **EKS** cluster (1.34) with a managed node group (`t3.medium`, 2–4 nodes) in the private subnets. Credentials only come from `aws configure`, and only `terraform.tfvars.example` is committed.
 
-**No paid AWS account was used.** Instead:
-
-1. `fmt`, `init` and `validate` pass for both roots, both locally and in CI.
-2. With a LocalStack override, `terraform plan` of the **unchanged AWS VPC + EKS root** plans **57 resources**, including the EKS cluster and node group.
-3. `terraform/local/` applies the **same network module** to LocalStack's emulated EC2 API, plus a kind cluster where EKS would be: real `plan → apply (20 added) → inspect → destroy (20 destroyed)`.
-
-Details and the limits of this approach are in [terraform/README.md](terraform/README.md).
+**Applied on real AWS** (`ap-south-1`) at the smallest possible size: 1× `t3.small` node, 1 NAT gateway, no KMS key or log group (`minimal_cost = true`). Every resource is named and tagged for me (`inventrack-abhi-dev-*`, `Owner = Abhi Gandhi - 10397`). Plan 52 → apply (including fixing an IAM tag-validation error and recovering a tainted cluster after a network drop, both documented) → `kubectl get nodes` Ready → `terraform destroy`. Before that, I practised the whole cycle for free on LocalStack + kind (`terraform/local/`). Details: [terraform/README.md](terraform/README.md).
 
 ```bash
 cd terraform && terraform init && terraform validate              # AWS root
@@ -200,10 +194,10 @@ docker run -d -p 4566:4566 localstack/localstack:4.14
 cd local && terraform init && terraform plan -out=tfplan && terraform apply tfplan && terraform destroy
 ```
 
-![terraform plan of the AWS VPC + EKS root: 57 to add](screenshots/terraform-plan-aws-eks.png)
-![terraform apply: 20 added](screenshots/terraform-apply.png)
-![VPC, 2 public + 2 private subnets, NAT, nodes Ready](screenshots/terraform-vpc-cluster.png)
-![terraform destroy: 20 destroyed](screenshots/terraform-destroy.png)
+![terraform plan on AWS: 52 to add](screenshots/terraform-plan.png)
+![terraform apply + EKS node Ready](screenshots/terraform-apply-eks.png)
+![VPC, 2 public + 2 private subnets, EKS cluster and node group](screenshots/aws-vpc-eks.png)
+![terraform destroy on AWS](screenshots/terraform-destroy-eks.png)
 
 ## 11. Kubernetes and Helm (M8)
 
@@ -287,10 +281,10 @@ I ran this flow end to end. See [gitops/README.md](gitops/README.md#live-run).
 | **M6** | Trivy on both images, fails on HIGH/CRITICAL | `scan-images` | ✅ |
 | | CVE explained | §9, `security/README.md` | ✅ |
 | **M7** | Valid HCL, `init` | `terraform-validate.png` | ✅ |
-| | Non-empty `plan` | `terraform-plan-aws-eks.png` (57), `terraform-plan-local.png` (20) | ✅ |
-| | VPC with 2+ public subnets | `modules/network`, `terraform-vpc-cluster.png` | ✅ |
-| | EKS + worker node group | `main.tf` `module "eks"`, planned. kind stand-in applied (§10) | ✅ (planned, no paid apply) |
-| | `destroy` cleans up | `terraform-destroy.png` | ✅ |
+| | Non-empty `plan` | `terraform-plan.png` (52, real AWS) | ✅ |
+| | VPC with 2+ public subnets | `modules/network`, `aws-vpc-eks.png` | ✅ |
+| | EKS + worker node group | `module "eks"`, `terraform-apply-eks.png`, `aws-vpc-eks.png` | ✅ |
+| | `destroy` cleans up | `terraform-destroy-eks.png` | ✅ |
 | | `tfvars.example`, no credentials | present, `terraform.tfvars` gitignored | ✅ |
 | **M8** | `k8s/namespace.yaml` | present | ✅ |
 | | Chart with `Chart.yaml`, `values.yaml`, templates | `helm/inventrack/` | ✅ |
@@ -312,7 +306,7 @@ I ran this flow end to end. See [gitops/README.md](gitops/README.md#live-run).
 - **Migrations belong in one place.** Running Alembic in every replica races. A hook Job runs it exactly once per release.
 - **Helm 4 uses server-side apply.** A hand `kubectl patch` takes ownership of a field, and Helm refuses to overwrite it until told to (`--force-conflicts`). That's one more reason not to edit live objects.
 - **Size resources from data.** The API needs ~64 Mi. A 40 Mi limit means OOMKilled (exit 137), and `kubectl top` or the Grafana memory panel would have shown that before release.
-- **You can practise cloud infrastructure without a bill.** LocalStack plus kind let me plan the real EKS config and run a full apply/destroy cycle of the shared network module for free. I'm clear in the docs about what is emulated.
+- **Cloud APIs have their own rules.** IAM rejected a tag value containing `(` `)` that EC2 had accepted. A network drop left a healthy EKS cluster tainted, and `terraform untaint` saved a full rebuild. Practising on LocalStack + kind first kept the paid run short.
 
 ## License
 
