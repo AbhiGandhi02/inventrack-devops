@@ -10,6 +10,30 @@ variable "project" {
   default     = "inventrack"
 }
 
+variable "owner" {
+  description = "Short owner name, included in every resource name"
+  type        = string
+  default     = "abhi"
+}
+
+variable "owner_full_name" {
+  description = "Owner tag value"
+  type        = string
+  default     = "Abhi Gandhi - 10397"
+
+  validation {
+    # IAM tag values only allow letters, numbers, spaces and _ . : / = + - @
+    condition     = can(regex("^[\\p{L}\\p{Z}\\p{N}_.:/=+\\-@]*$", var.owner_full_name))
+    error_message = "owner_full_name may only contain letters, numbers, spaces and _ . : / = + - @ (no parentheses)."
+  }
+}
+
+variable "minimal_cost" {
+  description = "Skip billable extras (KMS key for secrets encryption, control-plane log group) for short-lived demo clusters"
+  type        = bool
+  default     = false
+}
+
 variable "environment" {
   description = "Environment name"
   type        = string

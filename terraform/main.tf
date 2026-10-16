@@ -4,7 +4,7 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  name         = "${var.project}-${var.environment}"
+  name         = "${var.project}-${var.owner}-${var.environment}" # e.g. inventrack-abhi-dev
   cluster_name = "${local.name}-eks"
 }
 
@@ -27,7 +27,13 @@ module "eks" {
   vpc_id     = module.network.vpc_id
   subnet_ids = module.network.private_subnet_ids # worker nodes stay off the internet
 
-  endpoint_public_access                   = true # restrict to your IP for anything beyond a demo
+  endpoint_public_access = true # restrict to your IP for anything beyond a demo
+
+  # Production keeps envelope encryption of Secrets (KMS) and control-plane audit logs.
+  # minimal_cost = true drops both for a short demo: no KMS key, no CloudWatch log group.
+  encryption_config                        = var.minimal_cost ? null : {}
+  create_cloudwatch_log_group              = !var.minimal_cost
+  enabled_log_types                        = var.minimal_cost ? [] : ["audit", "api", "authenticator"]
   enable_cluster_creator_admin_permissions = true
 
   addons = {

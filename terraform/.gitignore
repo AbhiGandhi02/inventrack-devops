@@ -5,3 +5,4 @@
 terraform.tfvars
 *.kubeconfig
 *_override.tf
+*.log
