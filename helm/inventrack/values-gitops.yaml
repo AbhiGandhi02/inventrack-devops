@@ -2,10 +2,10 @@
 # The CI job "gitops-bump" rewrites both tags with the commit SHA it just built and pushed.
 api:
   image:
-    tag: "092fc033f89e9229d8411cc53d6910ff4859079e"
+    tag: "65abd4e31c76c14101ae87f5e4b623c6075eb221"
 web:
   image:
-    tag: "092fc033f89e9229d8411cc53d6910ff4859079e"
+    tag: "65abd4e31c76c14101ae87f5e4b623c6075eb221"
 
 database:
   # Argo CD renders without cluster access, so the chart cannot generate and keep a password.
