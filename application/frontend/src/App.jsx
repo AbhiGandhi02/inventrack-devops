@@ -145,7 +145,7 @@ export default function App() {
         )}
       </section>
 
-      <footer className="foot">InvenTrack v1.1 · Abhi Gandhi · 10397 · deployed by Argo CD</footer>
+      <footer className="foot">InvenTrack v1.2 · Abhi Gandhi · 10397 · deployed by Argo CD</footer>
 
       {editing && (
         <ItemForm
